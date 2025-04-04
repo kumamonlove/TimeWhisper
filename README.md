@@ -2,26 +2,27 @@
 
 ## Project Objective:
 ### Background
-现有的时间管理软件apps都需要用户以特定的形式输入自己的时间安排，流程有时比较繁琐；并且缺少根据个人时间使用情况定制个性化时间管理策略的功能。
+Current time management apps often require users to input their schedules in specific formats, which can be cumbersome. Additionally, they lack the ability to provide personalized time management strategies based on individual time usage patterns.
+
 ### Objective
-通过嵌入经过微调的Chatbot，探索新的时间管理软件的形式，让用户能够根据自然语言、个性用语更简单地规划、记录时间，例如“Re 3h”可以被识别成进行3小时的阅读并记录到数据库中，让用户更方便地进行记录。此外，Chatbot可以设置个性化的语言风格对用户的记录进行监督/反馈，并且能够根据情景，提供最合适的交互式数据图表对用户的时间管理进行分析，并且提出个性化的时间管理建议。
+By integrating a fine-tuned Chatbot, this project aims to explore a new form of time management software that allows users to plan and record their time using natural language and personal expressions. For example, an input like “Re 3h” can be interpreted as “reading for 3 hours” and logged into the database, making it easier for users to keep records. Additionally, the Chatbot can supervise and give feedback using a personalized language style, and generate scenario-based interactive data visualizations to analyze users' time management, offering tailored suggestions accordingly.
 
 ## Target User:
-需要进行时间管理，但对现有时间管理工具不满意的用户
+Users who need time management but are dissatisfied with existing tools.
 
 ## Features:
-- 通过自然语言进行时间管理、记录
-- 提供个性化监督/反馈
-- 根据需求情景生成相应的交互式图表进行数据分析
-- 根据用户的时间管理习惯，生成个性化时间管理策略
+Time management and recording via natural language
+Personalized supervision/feedback
+Scenario-based interactive data visualizations for analysis
+Customized time management strategies based on user habits
 
 ### Planned features:
-- 通过自然语言进行时间管理、记录
-- 提供个性化监督/反馈
-- 根据用户的时间管理习惯，生成个性化时间管理策略
+Time management and recording via natural language
+Personalized supervision/feedback
+Customized time management strategies based on user habits
 
 ### Feature nice-to-have
-- 根据需求情景生成相应的交互式图表进行数据分析
+Scenario-based interactive data visualizations for analysis
 
 ## Installation instructions:
 
