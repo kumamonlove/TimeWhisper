@@ -26,7 +26,39 @@ This project aims to create a web-based productivity tool that integrates a chat
 | 7    | Final testing and documentation                    |  Planned                            |
 | 8    | Final presentation and project wrap-up             |  Planned                            |
 
-## 📬 Contact Information
+## Roadmap
+Week 3
+Set up GitHub repository
+Define feature list and chatbot API structure
+Clarify frontend-backend interaction logic
+
+Week 4
+Develop task input UI using React
+Integrate OpenAI API for basic chatbot conversation
+Begin structuring backend with Node.js and Express
+
+Week 5
+Connect frontend inputs to backend database (SQLite)
+Implement mood and reflection logging
+Test CRUD functionality
+
+Week 6
+Build data visualization with ECharts
+Design and refine chatbot response styles
+Implement task filtering and daily summary
+
+Week 7
+Conduct UI/UX testing and bug fixes
+Add documentation and user guide
+Prepare demo version
+
+Week 8
+Finalize deployment
+Present project and complete wrap-up
+Collect peer feedback and suggestions for future iteration
+
+
+## Contact Information
 
 | Name          | Role       | GitHub         | Email                  |
 |---------------|------------|----------------|------------------------|
