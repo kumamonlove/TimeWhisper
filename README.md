@@ -20,11 +20,11 @@ This project aims to create a web-based productivity tool that integrates a chat
 | Week | What is Expected                                   | What is Delivered                     |
 |------|----------------------------------------------------|----------------------------------------|
 | 3    | Confirm scope, set up repo, define API structure   | ✅ Scope defined, repo ready           |
-| 4    | Implement task input & chatbot integration         | ⏳ In progress                         |
-| 5    | Add SQLite saving and mood input                   | ⏳ Planned                            |
-| 6    | Build visualization and polish UI                  | ⏳ Planned                            |
-| 7    | Final testing and documentation                    | ⏳ Planned                            |
-| 8    | Final presentation and project wrap-up             | ⏳ Planned                            |
+| 4    | Implement task input & chatbot integration         |  In progress                         |
+| 5    | Add SQLite saving and mood input                   |  Planned                            |
+| 6    | Build visualization and polish UI                  |  Planned                            |
+| 7    | Final testing and documentation                    |  Planned                            |
+| 8    | Final presentation and project wrap-up             |  Planned                            |
 
 ## 📬 Contact Information
 
