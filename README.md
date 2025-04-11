@@ -1,33 +1,34 @@
-# Chatbot-based Time Management Website
+# Project Title: Chatbot-based Time Management Website
 
-## Project Objective:
-### Background
-Current time management apps often require users to input their schedules in specific formats, which can be cumbersome. Additionally, they lack the ability to provide personalized time management strategies based on individual time usage patterns.
+## Project Scope
+This project aims to create a web-based productivity tool that integrates a chatbot to help users plan, reflect, and manage their time effectively. The system will allow users to input tasks, interact with a chatbot for time management advice, and visualize productivity history.
 
-### Objective
-By integrating a fine-tuned Chatbot, this project aims to explore a new form of time management software that allows users to plan and record their time using natural language and personal expressions. For example, an input like “Re 3h” can be interpreted as “reading for 3 hours” and logged into the database, making it easier for users to keep records. Additionally, the Chatbot can supervise and give feedback using a personalized language style, and generate scenario-based interactive data visualizations to analyze users' time management, offering tailored suggestions accordingly.
+## Target Users
+- Students who want to manage study sessions better
+- Remote workers who need time structure
+- Self-learners with goal-oriented daily plans
 
-## Target User:
-Users who need time management but are dissatisfied with existing tools.
+## Features
+- Interactive chatbot (via OpenAI API) for time management suggestions
+- Task input interface with tracking
+- Mood / reflection input per task
+- Basic data visualization (e.g., daily summary)
+- Local storage using SQLite
 
-## Features:
-Time management and recording via natural language
-Personalized supervision/feedback
-Scenario-based interactive data visualizations for analysis
-Customized time management strategies based on user habits
+## Timeline
 
-### Planned features:
-Time management and recording via natural language
-Personalized supervision/feedback
-Customized time management strategies based on user habits
+| Week | What is Expected                                   | What is Delivered                     |
+|------|----------------------------------------------------|----------------------------------------|
+| 3    | Confirm scope, set up repo, define API structure   | ✅ Scope defined, repo ready           |
+| 4    | Implement task input & chatbot integration         | ⏳ In progress                         |
+| 5    | Add SQLite saving and mood input                   | ⏳ Planned                            |
+| 6    | Build visualization and polish UI                  | ⏳ Planned                            |
+| 7    | Final testing and documentation                    | ⏳ Planned                            |
+| 8    | Final presentation and project wrap-up             | ⏳ Planned                            |
 
-### Feature nice-to-have
-Scenario-based interactive data visualizations for analysis
+## 📬 Contact Information
 
-## Installation instructions:
-
-## Development roadmap:
-
-|Phase|Milestone|Due Date|statues|
-|----------|----------|----------|----------|
-|User Research|-------|-------|-------|
+| Name          | Role       | GitHub         | Email                  |
+|---------------|------------|----------------|------------------------|
+| Junxian Yu    | Developer  | @yujunxian     | yujux1998@gmail.com    |
+| Siyang Shen   | Client     | @kumamonlove   | andyshen@uw.edu        |
