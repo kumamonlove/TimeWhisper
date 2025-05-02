@@ -159,3 +159,43 @@ Please provide a time management plan for today in Markdown, including a table a
 
 ------
 
+## Update – May 02
+
+**Swap pages and task pages**:
+Adjusted the positions of the conversation page and task page.
+
+Of course! Here's the English version of your content:
+
+**Modernized Color Scheme:**
+
+- Adopted a blue-based primary color (#3a6ea5) for a more professional and composed appearance
+- Defined a complete color system and variables for easier maintenance and consistent visual style
+- Introduced more refined grayscale gradients to enhance the sense of depth in the interface
+
+**Sophisticated Visual Effects:**
+
+- Added detailed shadow effects to enhance depth and dimensionality
+- Optimized border radii to make the interface more modern and softer
+- Introduced transition animations to make interactions smoother and more natural
+
+**Improved Layout and Typography:**
+
+- Expanded the overall container width for better space utilization
+- Optimized tab styles by using an underline to indicate the active tab
+- Enhanced the layout of task lists and chat interfaces to improve readability
+
+**Advanced Detail Enhancements:**
+
+- Added decorative underlines to headings
+- Introduced hover animations and elevation effects for task items
+- Improved the state feedback of buttons and input fields
+- Added fade-in animations for messages
+
+**Refined Form Elements:**
+
+- Beautified the styles of input fields and buttons
+- Enhanced the focus state of form elements
+- Optimized the styling of the date picker
+
+------
+
