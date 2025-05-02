@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import TaskList from './components/TaskList';
 import ChatAssistant from './components/ChatAssistant';
 import axios from 'axios';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 import './App.css';
 
 const API_URL = 'http://localhost:8000';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('tasks');
+  const [activeTab, setActiveTab] = useState('chat');
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState({
     title: '',
@@ -15,6 +17,7 @@ function App() {
     due_date: '',
     completed: false
   });
+  const [dueDateTime, setDueDateTime] = useState(null);
 
   useEffect(() => {
     fetchTasks();
@@ -25,7 +28,7 @@ function App() {
       const response = await axios.get(`${API_URL}/tasks`);
       setTasks(response.data);
     } catch (error) {
-      console.error('Failed to obtain task:', error);
+      console.error('Failed to fetch tasks:', error);
     }
   };
 
@@ -33,14 +36,21 @@ function App() {
     e.preventDefault();
     if (!newTask.title.trim()) return;
 
+    // Format the date and time for API submission
+    const formattedDueDate = dueDateTime ? dueDateTime.toISOString() : '';
+
     try {
-      await axios.post(`${API_URL}/tasks`, newTask);
+      await axios.post(`${API_URL}/tasks`, {
+        ...newTask,
+        due_date: formattedDueDate
+      });
       setNewTask({
         title: '',
         description: '',
         due_date: '',
         completed: false
       });
+      setDueDateTime(null);
       fetchTasks();
     } catch (error) {
       console.error('Failed to add task:', error);
@@ -52,7 +62,7 @@ function App() {
       await axios.put(`${API_URL}/tasks/${updatedTask.id}`, updatedTask);
       fetchTasks();
     } catch (error) {
-      console.error('Update task failed:', error);
+      console.error('Failed to update task:', error);
     }
   };
 
@@ -61,7 +71,7 @@ function App() {
       await axios.delete(`${API_URL}/tasks/${taskId}`);
       fetchTasks();
     } catch (error) {
-      console.error('Task deletion failed:', error);
+      console.error('Failed to delete task:', error);
     }
   };
 
@@ -73,28 +83,47 @@ function App() {
     });
   };
 
+  const handleDateTimeChange = (date) => {
+    setDueDateTime(date);
+    if (date) {
+      const isoString = date.toISOString();
+      setNewTask({
+        ...newTask,
+        due_date: isoString
+      });
+    } else {
+      setNewTask({
+        ...newTask,
+        due_date: ''
+      });
+    }
+  };
+
   return (
     <div className="app-container">
       <header>
         <h1>TimeWhisper</h1>
         <div className="tabs">
           <button 
-            className={activeTab === 'tasks' ? 'active' : ''} 
-            onClick={() => setActiveTab('tasks')}
-          >
-            task management
-          </button>
-          <button 
             className={activeTab === 'chat' ? 'active' : ''} 
             onClick={() => setActiveTab('chat')}
           >
             Chat Assistant
           </button>
+          <button 
+            className={activeTab === 'tasks' ? 'active' : ''} 
+            onClick={() => setActiveTab('tasks')}
+          >
+            Task Manager
+          </button>
         </div>
       </header>
 
       <main>
-        {activeTab === 'tasks' ? (
+        <div style={{ display: activeTab === 'chat' ? 'block' : 'none' }}>
+          <ChatAssistant />
+        </div>
+        <div style={{ display: activeTab === 'tasks' ? 'block' : 'none' }}>
           <div className="tasks-container">
             <form className="task-form" onSubmit={handleAddTask}>
               <input 
@@ -108,18 +137,26 @@ function App() {
               <input 
                 type="text" 
                 name="description" 
-                placeholder="Task description (optional)" 
+                placeholder="Task Description (Optional)" 
                 value={newTask.description || ''} 
                 onChange={handleInputChange} 
               />
-              <input 
-                type="date" 
-                name="due_date" 
-                placeholder="deadline" 
-                value={newTask.due_date || ''} 
-                onChange={handleInputChange} 
-              />
-              <button type="submit">add task</button>
+              <div className="date-time-picker-wrapper">
+                <label htmlFor="due-date-time">Due Date & Time:</label>
+                <DatePicker
+                  id="due-date-time"
+                  selected={dueDateTime}
+                  onChange={handleDateTimeChange}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={30}
+                  timeCaption="Time"
+                  dateFormat="MMMM d, yyyy h:mm aa"
+                  placeholderText="Select due date and time"
+                  className="date-time-picker"
+                />
+              </div>
+              <button type="submit">Add Task</button>
             </form>
 
             <TaskList 
@@ -128,9 +165,7 @@ function App() {
               onTaskDelete={handleTaskDelete}
             />
           </div>
-        ) : (
-          <ChatAssistant />
-        )}
+        </div>
       </main>
     </div>
   );
