@@ -3,18 +3,22 @@ import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { tomorrow } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import remarkGfm from 'remark-gfm';  // Import remarkGfm plugin
 
 const API_URL = 'http://localhost:8000';
 
 const ChatAssistant = () => {
   const [messages, setMessages] = useState([
-    { id: 1, text: 'Hello! I am your time management assistant. I can help you manage tasks, schedule time, and provide time management advice. Is there anything I can help you with?', sender: 'assistant' }
+    { id: 1, text: 'Hello! I am your time management assistant. I can help you manage tasks, schedule time, and provide time management advice. How can I help you?', sender: 'assistant' }
   ]);
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [models, setModels] = useState({});
   const [selectedModel, setSelectedModel] = useState('deepseek-chat');
-  const [isStreamMode, setIsStreamMode] = useState(true); 
+  const [isStreamMode, setIsStreamMode] = useState(true); // Default to streaming output
+  const [enableHistory, setEnableHistory] = useState(true); // Default to enable history
+  const [historyLength, setHistoryLength] = useState(5); // Default to keep 5 conversation rounds
+  const [isStreaming, setIsStreaming] = useState(false); // Track if streaming is in progress
 
   const messagesEndRef = useRef(null);
   const eventSourceRef = useRef(null);
@@ -25,12 +29,13 @@ const ChatAssistant = () => {
     fetchModels();
 
     return () => {
+      // Clean up EventSource connection
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
       }
       
-
+      // Clean up Fetch request
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -50,16 +55,59 @@ const ChatAssistant = () => {
       const response = await axios.get(`${API_URL}/models`);
       setModels(response.data);
     } catch (error) {
-      console.error('Failed to retrieve the model list:', error);
+      console.error('Failed to fetch models:', error);
     }
+  };
+
+  // Prepare history messages according to backend API requirements
+  const prepareHistoryMessages = () => {
+    if (!enableHistory) return [];
+    
+    // Filter out the most recent messages in order
+    const recentMessages = [...messages].filter(msg => msg.id !== 'temp') // Exclude temporary messages
+                                        .slice(-historyLength * 2); // Get the most recent n conversations (user and assistant)
+    
+    // Convert to the format required by the backend API
+    return recentMessages.map(msg => ({
+      role: msg.sender === 'user' ? 'user' : 'assistant',
+      content: msg.text
+    }));
+  };
+
+  // Function to abort the current streaming response
+  const handleAbortStream = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
+    }
+    
+    // Update the last message to show it was interrupted
+    setMessages(prev => {
+      const lastMessage = prev[prev.length - 1];
+      if (lastMessage && lastMessage.loading) {
+        return prev.map(msg =>
+          msg.id === lastMessage.id
+            ? { ...msg, text: msg.text + " (Response interrupted)", loading: false }
+            : msg
+        );
+      }
+      return prev;
+    });
+    
+    setIsLoading(false);
+    setIsStreaming(false);
   };
 
   const handleStreamResponse = async (userMessage) => {
     try {
-
+      // First add user message
       setMessages(prev => [...prev, userMessage]);
       
-
+      // Create an initial empty assistant message
       const assistantMessageId = Date.now() + 1;
       setMessages(prev => [
         ...prev, 
@@ -71,7 +119,10 @@ const ChatAssistant = () => {
         }
       ]);
 
+      // Get history messages
+      const historyMessages = prepareHistoryMessages();
 
+      // Cancel previous requests
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
@@ -79,10 +130,13 @@ const ChatAssistant = () => {
         eventSourceRef.current.close();
       }
 
-
+      // Create new abort controller
       abortControllerRef.current = new AbortController();
+      
+      // Set streaming flag to true
+      setIsStreaming(true);
 
-
+      // Use /chat_stream interface to get streaming response
       const response = await fetch(`${API_URL}/chat_stream`, {
         method: 'POST',
         headers: {
@@ -91,13 +145,14 @@ const ChatAssistant = () => {
         },
         body: JSON.stringify({
           message: userMessage.text,
-          model: selectedModel
+          model: selectedModel,
+          history: historyMessages // Add history messages
         }),
         signal: abortControllerRef.current.signal
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const reader = response.body.getReader();
@@ -114,34 +169,34 @@ const ChatAssistant = () => {
           break;
         }
         
-
+        // Decode byte stream
         const text = decoder.decode(value);
         accumulatedText += text;
         
-
+        // Process SSE events
         const events = accumulatedText.split("\n\n");
-        accumulatedText = events.pop() || ''; 
+        accumulatedText = events.pop() || ''; // Last one might be incomplete
         
         for (const event of events) {
           if (event.trim() === '') continue;
           
-
+          // Parse event data
           const dataMatch = event.match(/^data: (.+)$/m);
           if (!dataMatch) continue;
           
           try {
             const data = JSON.parse(dataMatch[1]);
             
-
+            // Process model info
             if (data.model && !receivedModel) {
               receivedModel = data.model;
             }
             
-
+            // Process content fragments
             if (data.content) {
               fullContent += data.content;
               
-
+              // Update message content
               setMessages(prev => 
                 prev.map(msg => 
                   msg.id === assistantMessageId 
@@ -151,7 +206,7 @@ const ChatAssistant = () => {
               );
             }
             
-
+            // Process completion event
             if (data.done) {
               setMessages(prev => 
                 prev.map(msg => 
@@ -161,19 +216,21 @@ const ChatAssistant = () => {
                 )
               );
               setIsLoading(false);
+              setIsStreaming(false);
               break;
             }
             
-
+            // Process error
             if (data.error) {
               setMessages(prev => 
                 prev.map(msg => 
                   msg.id === assistantMessageId 
-                    ? { ...msg, text: `Error occurred:${data.error}`, loading: false } 
+                    ? { ...msg, text: `Error: ${data.error}`, loading: false } 
                     : msg
                 )
               );
               setIsLoading(false);
+              setIsStreaming(false);
               break;
             }
             
@@ -182,40 +239,45 @@ const ChatAssistant = () => {
           }
         }
         
-
+        // Scroll to bottom to show new messages
         scrollToBottom();
       }
       
     } catch (error) {
       console.error('Error processing streaming response:', error);
       setMessages(prev => {
-
+        // Find the last message
         const lastMessage = prev[prev.length - 1];
         if (lastMessage && lastMessage.loading) {
-
+          // Update error message
           return prev.map(msg =>
             msg.id === lastMessage.id
-              ? { ...msg, text: `Connection error:${error.message}`, loading: false }
+              ? { ...msg, text: `Connection error: ${error.message}`, loading: false }
               : msg
           );
         }
         return prev;
       });
       setIsLoading(false);
+      setIsStreaming(false);
     } finally {
       abortControllerRef.current = null;
     }
   };
 
   const handleNormalResponse = async (userMessage) => {
-
+    // First add user message
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
+
+    // Get history messages
+    const historyMessages = prepareHistoryMessages();
 
     try {
       const response = await axios.post(`${API_URL}/chat`, {
         message: userMessage.text,
-        model: selectedModel
+        model: selectedModel,
+        history: historyMessages // Add history messages
       });
 
       const assistantMessage = {
@@ -231,8 +293,8 @@ const ChatAssistant = () => {
       
       const errorMessage = {
         id: Date.now() + 1,
-        text: 'Sorry, I have encountered some issues. Please try again later.' + 
-              (error.response?.data?.detail ? `error: ${error.response.data.detail}` : ''),
+        text: 'Sorry, I encountered a problem. Please try again later.' + 
+              (error.response?.data?.detail ? `Error: ${error.response.data.detail}` : ''),
         sender: 'assistant'
       };
 
@@ -270,14 +332,33 @@ const ChatAssistant = () => {
     setIsStreamMode(!isStreamMode);
   };
 
+  const toggleHistoryMode = () => {
+    setEnableHistory(!enableHistory);
+  };
 
+  const handleHistoryLengthChange = (e) => {
+    const value = parseInt(e.target.value);
+    if (!isNaN(value) && value > 0) {
+      setHistoryLength(value);
+    }
+  };
+
+  const clearHistory = () => {
+    // Only keep the initial greeting
+    setMessages([
+      { id: 1, text: 'Hello! I am your time management assistant. I can help you manage tasks, schedule time, and provide time management advice. How can I help you?', sender: 'assistant' }
+    ]);
+  };
+
+  // Render message content, using Markdown for assistant messages
   const renderMessageContent = (message) => {
     if (message.sender === 'assistant') {
       return (
         <div className="markdown-content">
           <ReactMarkdown
+            remarkPlugins={[remarkGfm]}  // Add remarkGfm plugin to support tables and GFM syntax
             components={{
-
+              // Add styles for elements
               h1: ({node, ...props}) => <h1 className="text-xl font-bold my-2" {...props} />,
               h2: ({node, ...props}) => <h2 className="text-lg font-bold my-2" {...props} />,
               h3: ({node, ...props}) => <h3 className="text-md font-bold my-1" {...props} />,
@@ -324,9 +405,10 @@ const ChatAssistant = () => {
   return (
     <div className="chat-container">
       <div className="model-selector">
-        <div className="flex justify-between items-center">
-          <div>
-            <label htmlFor="model-select">Select AI model: </label>
+        {/* First row: Model selection and streaming toggle */}
+        <div className="flex flex-wrap justify-between items-center mb-2">
+          <div className="model-select-container">
+            <label htmlFor="model-select">Select AI Model: </label>
             <select 
               id="model-select" 
               value={selectedModel} 
@@ -342,7 +424,7 @@ const ChatAssistant = () => {
             </select>
           </div>
           <div className="stream-toggle">
-            <label htmlFor="stream-mode" className="mr-2">Stream Output: </label>
+            <label htmlFor="stream-mode" className="mr-2">Streaming Output: </label>
             <input
               type="checkbox"
               id="stream-mode"
@@ -351,6 +433,45 @@ const ChatAssistant = () => {
               disabled={isLoading}
             />
           </div>
+        </div>
+        
+        {/* Second row: History options and clear button */}
+        <div className="flex flex-wrap justify-between items-center">
+          <div className="history-controls">
+            <div className="flex flex-wrap items-center">
+              <label htmlFor="history-mode" className="mr-2">History Memory: </label>
+              <input
+                type="checkbox"
+                id="history-mode"
+                checked={enableHistory}
+                onChange={toggleHistoryMode}
+                disabled={isLoading}
+                className="mr-4"
+              />
+              {enableHistory && (
+                <div className="history-length-input flex items-center">
+                  <label htmlFor="history-length" className="mr-2">Memory Length: </label>
+                  <input
+                    type="number"
+                    id="history-length"
+                    min="1"
+                    max="10"
+                    value={historyLength}
+                    onChange={handleHistoryLengthChange}
+                    disabled={isLoading}
+                    className="w-14 mr-4 px-2 py-1 border rounded"
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={clearHistory}
+            disabled={isLoading || messages.length <= 1}
+            className="clear-button"
+          >
+            Clear Chat
+          </button>
         </div>
       </div>
 
@@ -362,13 +483,13 @@ const ChatAssistant = () => {
           >
             {renderMessageContent(message)}
             {message.model && message.sender === 'assistant' && !message.loading && (
-              <div className="message-model">use model: {message.model}</div>
+              <div className="message-model">Using model: {message.model}</div>
             )}
           </div>
         ))}
         {isLoading && !messages.some(m => m.loading) && (
           <div className="message assistant-message">
-            Thinking about
+            Thinking...
           </div>
         )}
         <div ref={messagesEndRef} />
@@ -378,18 +499,28 @@ const ChatAssistant = () => {
         <input
           type="text"
           className="chat-input"
-          placeholder="Enter your question..."
+          placeholder="Type your question..."
           value={newMessage}
           onChange={e => setNewMessage(e.target.value)}
           disabled={isLoading}
         />
-        <button 
-          type="submit" 
-          className="send-button"
-          disabled={isLoading || !newMessage.trim()}
-        >
-          sending
-        </button>
+        {isStreaming ? (
+          <button 
+            type="button" 
+            className="stop-button"
+            onClick={handleAbortStream}
+          >
+            Stop
+          </button>
+        ) : (
+          <button 
+            type="submit" 
+            className="send-button"
+            disabled={isLoading || !newMessage.trim()}
+          >
+            Send
+          </button>
+        )}
       </form>
     </div>
   );
