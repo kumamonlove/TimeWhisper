@@ -1,5 +1,9 @@
 # TimeWhisper
 
+Client Milestone 1 Meeting Note: https://github.com/kumamonlove/TimeWhisper/issues/6#issue-3037033222
+
+
+
 TimeWhisper is a time management web application built with React and Python FastAPI, integrated with DeepSeek AI features to help users better manage their time and tasks.
 
 ## Features
