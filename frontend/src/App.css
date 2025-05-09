@@ -718,4 +718,199 @@ h1 {
   padding: 2rem;
   color: var(--gray-500);
   font-style: italic;
+}
+
+/* 统计图表样式 */
+.stats-container {
+  background-color: white;
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition-speed) ease;
+  border: 1px solid var(--gray-200);
+}
+
+.stats-container h2 {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.stats-container h2:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background-color: var(--primary-color);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.stats-card {
+  background-color: var(--gray-100);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-speed) ease;
+  border: 1px solid var(--gray-200);
+}
+
+.stats-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.stats-card h3 {
+  color: var(--primary-color);
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.stats-card.full-width {
+  grid-column: 1 / -1;
+}
+
+.chart-container {
+  margin-top: 1rem;
+  height: 100%;
+}
+
+.stats-summary {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  margin-top: 0.25rem;
+}
+
+/* 任务完成后的弹出统计图表 */
+.task-stats-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.task-stats-popup-content {
+  background-color: white;
+  width: 90%;
+  max-width: 1000px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: var(--radius-lg);
+  position: relative;
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+  animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.close-stats-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--gray-600);
+  transition: color var(--transition-speed) ease;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.close-stats-button:hover {
+  color: var(--danger-color);
+  background-color: rgba(229, 62, 62, 0.1);
+}
+
+/* 响应式布局调整 */
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .task-stats-popup-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+  
+  .stat-value {
+    font-size: 1.5rem;
+  }
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+  width: 100%;
+}
+
+.logout-button {
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  padding: 8px 16px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+  z-index: 10;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
 } 
