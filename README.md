@@ -242,4 +242,29 @@ Created login interfacet:
 - Set up in a simple and elegant form.
 
 ------
+## Update – May 16th
 
+Enhanced the conversation and task management features:
+
+- **ChatGPT-style Conversation Management**: 
+  - Added ability to create new conversations with a single click
+  - Implemented conversation history storage in SQLite database
+  - Added sidebar to view and switch between previous conversations
+  - Enabled conversation title editing for better organization
+
+- **Persistent Chat History**:
+  - All conversations are now saved automatically
+  - Users can resume previous conversations at any time
+  - Chat sessions persist across application restarts
+  - Multiple conversations can be managed simultaneously
+  
+- **AI-Powered Task Table Import**:
+  - Added "Request Plan Table" button to generate task schedules in table format
+  - Implemented intelligent detection of Markdown tables in AI responses
+  - Enabled one-click import of detected tables into Task Manager
+  - Added date recognition with automatic time distribution for imported tasks
+  - Supports keywords like "today", "tomorrow", "next Monday", etc. for smarter scheduling
+
+These improvements make the application more powerful for time management, combining the AI assistant's planning capabilities with practical task tracking features.
+
+------
