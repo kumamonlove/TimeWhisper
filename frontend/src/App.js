@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import TaskList from './components/TaskList';
 import ChatAssistant from './components/ChatAssistant';
+import TaskStats from './components/TaskStats';
+import Login from './components/Login';
+import ProtectedRoute from './components/ProtectedRoute';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
@@ -8,7 +12,7 @@ import './App.css';
 
 const API_URL = 'http://localhost:8000';
 
-function App() {
+function MainApp() {
   const [activeTab, setActiveTab] = useState('chat');
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState({
@@ -18,6 +22,8 @@ function App() {
     completed: false
   });
   const [dueDateTime, setDueDateTime] = useState(null);
+  const [showStats, setShowStats] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTasks();
@@ -33,7 +39,7 @@ function App() {
   };
 
   const handleAddTask = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     if (!newTask.title.trim()) return;
 
     // Format the date and time for API submission
@@ -57,10 +63,36 @@ function App() {
     }
   };
 
+  // Add a function to create multiple tasks at once - useful for table import
+  const addMultipleTasks = async (tasksToAdd) => {
+    try {
+      // Send all task creation requests
+      for (const task of tasksToAdd) {
+        await axios.post(`${API_URL}/tasks`, task);
+      }
+      
+      // Refresh the task list
+      fetchTasks();
+      
+      // Switch to the tasks tab to show the newly created tasks
+      setActiveTab('tasks');
+      
+      return { success: true, count: tasksToAdd.length };
+    } catch (error) {
+      console.error('Failed to add multiple tasks:', error);
+      return { success: false, error: error.message };
+    }
+  };
+
   const handleTaskUpdate = async (updatedTask) => {
     try {
       await axios.put(`${API_URL}/tasks/${updatedTask.id}`, updatedTask);
       fetchTasks();
+      
+      // Show statistics when a task is marked as completed
+      if (updatedTask.completed) {
+        setShowStats(true);
+      }
     } catch (error) {
       console.error('Failed to update task:', error);
     }
@@ -99,10 +131,20 @@ function App() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    navigate('/login');
+  };
+
   return (
     <div className="app-container">
       <header>
-        <h1>TimeWhisper</h1>
+        <div className="header-content">
+          <h1>TimeWhisper</h1>
+          <button className="logout-button" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
         <div className="tabs">
           <button 
             className={activeTab === 'chat' ? 'active' : ''} 
@@ -116,12 +158,18 @@ function App() {
           >
             Task Manager
           </button>
+          <button 
+            className={activeTab === 'stats' ? 'active' : ''} 
+            onClick={() => setActiveTab('stats')}
+          >
+            Task Statistics
+          </button>
         </div>
       </header>
 
       <main>
         <div style={{ display: activeTab === 'chat' ? 'block' : 'none' }}>
-          <ChatAssistant />
+          <ChatAssistant onAddTasks={addMultipleTasks} onSwitchTab={setActiveTab} />
         </div>
         <div style={{ display: activeTab === 'tasks' ? 'block' : 'none' }}>
           <div className="tasks-container">
@@ -164,10 +212,48 @@ function App() {
               onTaskUpdate={handleTaskUpdate}
               onTaskDelete={handleTaskDelete}
             />
+            
+            {/* Statistics popup shown when task is completed */}
+            {showStats && (
+              <div className="task-stats-popup">
+                <div className="task-stats-popup-content">
+                  <button 
+                    className="close-stats-button" 
+                    onClick={() => setShowStats(false)}
+                  >
+                    &times;
+                  </button>
+                  <TaskStats tasks={tasks} />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        <div style={{ display: activeTab === 'stats' ? 'block' : 'none' }}>
+          <div className="stats-container">
+            <TaskStats tasks={tasks} />
           </div>
         </div>
       </main>
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <MainApp />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
 
