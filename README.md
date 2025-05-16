@@ -278,6 +278,6 @@ These improvements make the application more powerful for time management, combi
 ------
 ## May 16 - Meeting Notes
 
-The meeting notes are documented in the GitHub Issue tracker, summary here: [Meeting Note – Client Milestone 1](https://github.com/kumamonlove/TimeWhisper/issues/8)
+The meeting notes are documented in the GitHub Issue tracker, summary here: [Meeting Note May 16](https://github.com/kumamonlove/TimeWhisper/issues/8)
 ------
 
