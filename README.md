@@ -203,3 +203,43 @@ Of course! Here's the English version of your content:
 
 ------
 
+## Update – May 9th
+
+Created the **TaskStats** component:
+
+- Includes four different types of charts (pie chart, bar chart, line chart).
+- Displays task completion status, task category distribution, weekly task trends, and yearly trends.
+- Utilizes the **Recharts** library to implement chart functionalities.
+
+Updated **App.js**:
+
+- Added a **"Task Statistics"** tab.
+- Enabled automatic display of the statistics popup when a task is marked as completed.
+- Implemented a popup window to show statistical information, with the ability to close it.
+
+Added corresponding **CSS styles**:
+
+- Designed a visually appealing layout and animation effects for the statistics cards.
+- Styled the popup window, including a semi-transparent background and animations.
+- Ensured responsive design of the statistical charts across different screen sizes.
+
+Now, users can view task statistics in two ways:
+
+- Click the **"Task Statistics"** tab to view all statistics at any time.
+- Automatically see the statistics popup after marking a task as completed.
+
+Each chart is dynamic and updates in real time based on the task data, providing intuitive data visualization, including:
+
+- The ratio of completed to incomplete tasks.
+- Distribution of tasks across different categories.
+- Weekly task completion trends.
+- Annual task completion trends.
+
+Created login interfacet:
+
+- The login interface uses a landscape map.
+- The login username and password used are admin and admin.
+- Set up in a simple and elegant form.
+
+------
+
