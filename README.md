@@ -14,6 +14,13 @@ TimeWhisper is a time management web application built with React and Python Fas
    - **DeepSeek-V3 (deepseek-chat)**: General-purpose conversational model
    - **DeepSeek-R1 (deepseek-reasoner)**: Optimized for complex reasoning
    - Markdown rendering supported, including code highlighting
+3. **Task Statistics**
+   - Tracks completed vs. uncompleted tasks
+   - Displays weekly activity overview
+   - Automatically syncs with Task Manager and AI-generated tasks
+4. **Cross-Module Integration**
+   - Seamless communication between Chat Assistant, Task Manager, and Statistics
+   - No manual duplication required between modules
 
 ## Tech Stack
 
@@ -33,6 +40,7 @@ time-management/
 │       ├── components/
 │       │   ├── TaskList.js
 │       │   └── ChatAssistant.js
+│       │   └── TaskStatistics.js
 │       ├── App.js
 │       ├── App.css
 │       ├── index.js
