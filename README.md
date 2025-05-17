@@ -1,4 +1,6 @@
 # TimeWhisper
+client code review:https://github.com/kumamonlove/TimeWhisper/issues/9
+
 
 Client Milestone 1 Meeting Note: https://github.com/kumamonlove/TimeWhisper/issues/6#issue-3037033222
 
