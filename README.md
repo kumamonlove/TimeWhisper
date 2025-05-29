@@ -84,11 +84,12 @@ time-management/
 1. Install Node.js dependencies:
 
    ```
-   cd frontend
+  cd frontend
    npm install
    npm install react-markdown react-syntax-highlighter --save
    npm install remark-gfm
    npm install react-datepicker
+   npm install recharts
    ```
 
 2. Start the frontend development server:
@@ -282,4 +283,28 @@ These improvements make the application more powerful for time management, combi
 
 - The meeting notes are documented in the GitHub Issue tracker, summary here: [Meeting Note May 16](https://github.com/kumamonlove/TimeWhisper/issues/8)
 ------
+## Update – May 29th
 
+Enhanced the user interface and visual experience:
+
+- **Dynamic Background Image Switching**: 
+  - Added background selector in the top-right corner
+  - Implemented three Beijing cityscape background options
+  - Created smooth transition effects between backgrounds
+  - Added semi-transparent overlay to ensure content readability
+
+- **Improved Task Completion Visualization**:
+  - Enhanced completed tasks with full green background styling
+  - Added visual cues including text strikethrough and color changes
+  - Styled "Mark Incomplete" button with green background and white text
+  - Improved contrast of due date information on completed tasks
+
+- **Responsive Design Improvements**:
+  - Optimized content containers with translucent backgrounds
+  - Added backdrop blur effects for better text readability
+  - Ensured consistent styling across all interface elements
+  - Enhanced overall visual coherence with background images
+
+These visual enhancements improve both aesthetics and functionality, making the application more engaging while maintaining excellent usability regardless of the chosen background.
+
+------
