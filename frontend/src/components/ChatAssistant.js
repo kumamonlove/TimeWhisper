@@ -90,7 +90,8 @@ const ChatAssistant = ({ onAddTasks, onSwitchTab }) => {
     // Detect markdown tables in the message
     const detectedTables = [];
     // This regex matches markdown tables with headers, separator row, and data rows
-    const tableRegex = /(?:^\|\s*(.+?)\s*\|\s*\n\|\s*[-:]+\s*\|\s*[-:]+[\s\|:-]*\n((?:\|[^\n]+\|\n)+))/gm;
+    // Updated to be more flexible with whitespace and formatting
+    const tableRegex = /\|[\s\S]*?\|\s*\n\|\s*[-:]+[-|\s:]*\n(\|[\s\S]*?\|\s*\n)+/gm;
     
     // Search for keywords to display after import
     const dateKeywordRegex = /(today|tomorrow|day after tomorrow|in three days|next (Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)|今天|明天|后天|大后天|下周[一二三四五六日天])/gi;
@@ -104,12 +105,19 @@ const ChatAssistant = ({ onAddTasks, onSwitchTab }) => {
     }
     
     let match;
+    let tableCount = 0;
     while ((match = tableRegex.exec(latestMessage.text)) !== null) {
       try {
         const fullTable = match[0];
+        console.log("Found table:", fullTable); // Debug logging
         
         // Split into lines
         const lines = fullTable.split('\n').filter(line => line.trim().length > 0);
+        
+        if (lines.length < 3) {
+          console.log("Skipping invalid table - not enough rows");
+          continue; // Skip if we don't have at least header, separator, and one data row
+        }
         
         // Header row is the first line
         const headerRow = lines[0];
@@ -151,6 +159,7 @@ const ChatAssistant = ({ onAddTasks, onSwitchTab }) => {
           });
         
         if (headers.length > 0 && rows.length > 0) {
+          tableCount++;
           detectedTables.push({
             id: `table-${Date.now()}-${detectedTables.length}`,
             headers,
@@ -158,6 +167,9 @@ const ChatAssistant = ({ onAddTasks, onSwitchTab }) => {
             fullTable,
             dateKeyword: detectedDateKeyword // Add detected date keyword
           });
+          console.log(`Successfully parsed table ${tableCount} with ${headers.length} columns and ${rows.length} rows`);
+        } else {
+          console.log("Skipping invalid table - no headers or rows");
         }
       } catch (error) {
         console.error('Error parsing table:', error);
@@ -167,6 +179,8 @@ const ChatAssistant = ({ onAddTasks, onSwitchTab }) => {
     if (detectedTables.length > 0) {
       console.log('Detected tables:', detectedTables);
       setDetectedTables(detectedTables);
+    } else {
+      console.log('No tables detected in message');
     }
   };
   
@@ -819,6 +833,10 @@ const ChatAssistant = ({ onAddTasks, onSwitchTab }) => {
       const hasTables = detectedTables.length > 0 && 
                         messages.filter(msg => msg.sender === 'assistant')
                                .slice(-1)[0]?.id === message.id;
+      
+      console.log("Rendering message with ID:", message.id);
+      console.log("Has tables:", hasTables);
+      console.log("Detected tables:", detectedTables);
                                
       return (
         <div className="markdown-content">
@@ -852,6 +870,10 @@ const ChatAssistant = ({ onAddTasks, onSwitchTab }) => {
           {/* Show import buttons for any detected tables in the latest assistant message */}
           {hasTables && (
             <div className="table-import-actions">
+              <div className="table-import-header">
+                <h4>Detected {detectedTables.length} {detectedTables.length === 1 ? 'table' : 'tables'} in this message</h4>
+                <p>You can import these tables as tasks with automatic time scheduling</p>
+              </div>
               {detectedTables.map((table, index) => (
                 <button 
                   key={table.id}
@@ -883,7 +905,16 @@ const ChatAssistant = ({ onAddTasks, onSwitchTab }) => {
 
   // Function to send a prompt to generate a plan table
   const requestPlanTable = () => {
-    const planTablePrompt = "Please create a detailed weekly planning table for me with the following columns: | Task | Description | Due Date | Priority |. Add at least 5 example tasks with realistic descriptions, clear due dates (please use terms like 'today', 'tomorrow', 'day after tomorrow', or 'next Monday/Tuesday/etc.'), and priority levels.";
+    const planTablePrompt = `Please create a detailed task planning table for me with the following structure:
+
+| Task | Description | Due Date | Priority |
+|------|-------------|----------|----------|
+| Example Task | Task description here | tomorrow | High |
+    
+Please include at least 5 tasks with realistic descriptions, clear due dates (using terms like 'today', 'tomorrow', 'next Monday', etc.), and priority levels (High/Medium/Low).
+
+Make sure the table is formatted exactly as shown above with the pipe symbols at the beginning and end of each row.`;
+    
     setNewMessage(planTablePrompt);
   };
 

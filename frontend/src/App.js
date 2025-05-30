@@ -5,10 +5,12 @@ import ChatAssistant from './components/ChatAssistant';
 import TaskStats from './components/TaskStats';
 import Login from './components/Login';
 import ProtectedRoute from './components/ProtectedRoute';
+import BackgroundSelector from './components/BackgroundSelector';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
 import './App.css';
+import beijin1 from './assets/beijin1.jpg';
 
 const API_URL = 'http://localhost:8000';
 
@@ -23,11 +25,30 @@ function MainApp() {
   });
   const [dueDateTime, setDueDateTime] = useState(null);
   const [showStats, setShowStats] = useState(false);
+  const [background, setBackground] = useState({
+    id: 'beijin1',
+    src: beijin1
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchTasks();
   }, []);
+
+  // Set the background image style as an effect
+  useEffect(() => {
+    document.body.style.backgroundImage = `url(${background.src})`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundAttachment = 'fixed';
+    
+    return () => {
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundSize = '';
+      document.body.style.backgroundPosition = '';
+      document.body.style.backgroundAttachment = '';
+    };
+  }, [background]);
 
   const fetchTasks = async () => {
     try {
@@ -131,6 +152,10 @@ function MainApp() {
     }
   };
 
+  const handleBackgroundChange = (id, src) => {
+    setBackground({ id, src });
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     navigate('/login');
@@ -141,9 +166,12 @@ function MainApp() {
       <header>
         <div className="header-content">
           <h1>TimeWhisper</h1>
-          <button className="logout-button" onClick={handleLogout}>
-            Logout
-          </button>
+          <div className="header-actions">
+            <BackgroundSelector onSelectBackground={handleBackgroundChange} />
+            <button className="logout-button" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
         </div>
         <div className="tabs">
           <button 
