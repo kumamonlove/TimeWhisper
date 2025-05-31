@@ -968,10 +968,10 @@ Make sure the table is formatted exactly as shown above with the pipe symbols at
       
       {/* Main chat area */}
       <div className="chat-container" ref={chatContainerRef}>
-        <div className="model-selector">
+        {/* <div className="model-selector">
           {/* Model selection and streaming toggle */}
           <div className="flex flex-wrap justify-between items-center mb-2">
-            <div className="model-select-container">
+            {/* <div className="model-select-container">
               <label htmlFor="model-select">Select AI Model: </label>
               <select 
                 id="model-select" 
@@ -986,8 +986,8 @@ Make sure the table is formatted exactly as shown above with the pipe symbols at
                   </option>
                 ))}
               </select>
-            </div>
-            <div className="stream-toggle">
+            </div> */}
+            {/* <div className="stream-toggle">
               <label htmlFor="stream-mode" className="mr-2">Streaming Output: </label>
               <input
                 type="checkbox"
@@ -996,12 +996,12 @@ Make sure the table is formatted exactly as shown above with the pipe symbols at
                 onChange={toggleStreamMode}
                 disabled={isLoading}
               />
-            </div>
-          </div>
+            </div> 
+          </div>*/}
           
-          {/* History options and action buttons */}
+
           <div className="flex flex-wrap justify-between items-center">
-            <div className="history-controls">
+            {/* <div className="history-controls">
               <div className="flex flex-wrap items-center">
                 <label htmlFor="history-mode" className="mr-2">History Memory: </label>
                 <input
@@ -1028,7 +1028,7 @@ Make sure the table is formatted exactly as shown above with the pipe symbols at
                   </div>
                 )}
               </div>
-            </div>
+            </div> */}
             <div className="action-buttons">
               <button
                 onClick={requestPlanTable}
@@ -1047,7 +1047,7 @@ Make sure the table is formatted exactly as shown above with the pipe symbols at
               </button>
             </div>
           </div>
-        </div>
+        </div> 
 
         {/* Conversation title editing */}
         {activeConversation && (
