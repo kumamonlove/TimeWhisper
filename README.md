@@ -1,3 +1,8 @@
+Meeting Note 5/30:
+https://github.com/kumamonlove/TimeWhisper/issues/10
+
+
+
 # TimeWhisper
 Web URL: http://timewhisper.cpolar.top
 
